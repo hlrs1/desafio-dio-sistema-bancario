@@ -58,7 +58,7 @@ def exibir_extrato(saldo,/,*,extrato):
     print(f"\nSaldo atual: R$ {saldo:.2f}")
     print("===============================")
 
-def criar_usuario(clientes):
+def criar_cliente(clientes):
      cpf= input("Informe o CPF (apenas numeros): ")
      cliente = filtrar_cliente(cpf, clientes)
 
@@ -78,13 +78,22 @@ def filtrar_cliente(cpf, clientes):
     usuarios_filtrados = [cliente for cliente in clientes if cliente["cpf"] == cpf]
     return usuarios_filtrados[0] if usuarios_filtrados else None
 
+def criar_conta (agencia, numero_conta, clientes):
+    cpf = input("Informe o cpf do cliente: ")
+    cliente = filtrar_cliente(cpf,clientes)
+    
+    if cliente:
+        print("\n *****Conta criada com sucesso!*****")
+        return {"agencia":agencia, "numero_conta": numero_conta, "cliente":cliente }
+    
+    print("\n=====Cliente não encontrado, fluxo de criação de conta encerrado! =====")
 
 def listar_contas(contas):
     for conta in contas:
         linha = f"""\
             Agência:\t{conta['agencia']}
             C/C:\t\t{conta['numero_conta']}
-            Titular:\t{conta['usuario']['nome']}
+            Titular:\t{conta['cliente']['nome']}
         """
         print("=" * 100)
         print(linha)
@@ -97,6 +106,9 @@ def main():
     extrato =""
     numero_saques = 0
     LIMITE_SAQUES = 3
+    AGENCIA = "0001"
+    clientes = []
+    contas = []
 
     while True:
 
@@ -117,9 +129,29 @@ def main():
         elif opcao == "e":
             
             exibir_extrato(saldo,extrato=extrato)
+        
+        elif opcao == "n":
+            numero_conta = len(contas)+1
+            conta = criar_conta(AGENCIA, numero_conta, clientes)
+
+            if conta:
+                 contas.append(conta)
+                 
+        elif opcao == "l":
+            
+            listar_contas(contas)
+
+        elif opcao == "u":
+            
+            criar_cliente(clientes)
 
         elif opcao == "q":
+            print("""\n    =======================================
+    Obrigado por utilizar nossos serviços!
+    =======================================\n\n""")
             break
 
         else:
             print("Operação inválida, por favor selecione novamente a opção desejada.")
+
+main()
